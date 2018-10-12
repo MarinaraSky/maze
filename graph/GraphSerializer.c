@@ -1,4 +1,6 @@
+#define _GNU_SOURCE
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -46,29 +48,41 @@ GraphSerializer_fromFile(FILE *fp)
 		return NULL;
 	}
 
-	char buf[128];
+	char *buf = NULL;
+	size_t sizeOfBuf = 1;
 	size_t lineNumber = 1;
+	size_t prevLineLength = 0;
+	size_t nextLineLength = 0;
 
-	while (fgets(buf, sizeof(buf), fp))
+	getline(&buf, &sizeOfBuf, fp);
+	prevLineLength = sizeOfBuf;
+	rewind(fp);
+
+	while(getline(&buf, &sizeOfBuf, fp) != -1)
 	{
-		size_t len = strlen(buf);
-		if (len == sizeof(buf)-1 && buf[len-1] != '\n')
+		size_t curLineSize = sizeOfBuf;
+		char *curLine = strdup(buf);
+		long loc = ftell(fp);
+		getline(&buf, &sizeOfBuf, fp);
+		rewind(fp);
+		nextLineLength = sizeOfBuf;
+		fseek(fp, loc, SEEK_SET);
+		if(curLineSize < prevLineLength && curLineSize < nextLineLength)
 		{
-			fprintf(stderr, "Line %zu starting with '%s' too long\n", lineNumber, buf);
-			fclose(fp);
-			Graph_disassemble(g);
-			return NULL;
-		}
+			printf("invalid map\n");
+		}	
+		else
+		{
+			printf("%s", curLine);
+		}	
 
+		prevLineLength = curLineSize;
+		sizeOfBuf = 1;
+	}
+		/*
 		char *from = strtok(buf, " \t\f\v\r\n");
 		char *to = strtok(NULL, " \t\f\v\r\n");
 		char *sWeight = strtok(NULL, " \t\f\v\r\n");
-        // Skip comment lines
-        if (buf[0] == '#')
-        {
-			++lineNumber;
-			continue;
-        }
 		if (!from || !to || !sWeight)
 		{
 			fprintf(stderr, "Line %zu invalid format, skipping\n", lineNumber);
@@ -92,7 +106,8 @@ GraphSerializer_fromFile(FILE *fp)
 		Graph_addEdge(g, from, to, weight);
 
 		++lineNumber;
-	}
+		*/
+	
 
 	return g;
 }
