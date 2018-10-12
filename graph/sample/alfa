@@ -1,0 +1,11 @@
+GA MD 721
+MD GA 721
+MD HI 4791
+HI MD 4791
+GA SK 7256.4
+SK GA 7256.4
+# These lines may be out of order
+# GA: → MD → SK
+# MD: → GA → HI
+# HI: → MD
+# SK: → GA
