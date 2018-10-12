@@ -8,9 +8,9 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc != 4)
+    if (argc != 2)
     {
-        fprintf(stderr, "Usage: %s <file> <start> <end>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <map>\n", argv[0]);
         return 1;
     }
 
