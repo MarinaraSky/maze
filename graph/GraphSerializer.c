@@ -48,15 +48,18 @@ GraphSerializer_fromFile(FILE *fp)
 		return NULL;
 	}
 
+	
 	char *buf = NULL;
 	size_t sizeOfBuf = 1;
-	size_t lineNumber = 1;
 	size_t prevLineLength = 0;
 	size_t nextLineLength = 0;
+	size_t maxLength = 0;
+	size_t lineCount = 0;
 
 	getline(&buf, &sizeOfBuf, fp);
 	prevLineLength = sizeOfBuf;
 	rewind(fp);
+
 
 	while(getline(&buf, &sizeOfBuf, fp) != -1)
 	{
@@ -70,15 +73,50 @@ GraphSerializer_fromFile(FILE *fp)
 		if(curLineSize < prevLineLength && curLineSize < nextLineLength)
 		{
 			printf("invalid map\n");
+			return NULL;
 		}	
-		else
+		if(curLineSize > maxLength)
 		{
-			printf("%s", curLine);
-		}	
+			maxLength = strlen(curLine);
+		}
 
+		lineCount++;
 		prevLineLength = curLineSize;
 		sizeOfBuf = 1;
+		free(curLine);
 	}
+	rewind(fp);
+	
+	char **maze = malloc(lineCount * sizeof(char*));
+	for(size_t i = 0; i < lineCount; i++)
+	{
+		maze[i] = calloc(maxLength + 1, 1);
+	}
+	size_t lineInMaze = -1;
+	sizeOfBuf = 1;
+	while(getline(&buf, &sizeOfBuf, fp) != -1)
+	{
+		strcpy(maze[++lineInMaze], buf);
+		sizeOfBuf = 1;
+	}
+
+	for(size_t i = 0; i < lineCount; i++)
+	{
+		for(size_t j = 0; j < maxLength; j++)
+		{
+			printf("%c", maze[i][j]);
+		}
+	}
+	free(buf);
+	/*
+	for(size_t i = 0; i < lineCount; i++)
+	{
+		for(size_t j = 0; j < maxLength; j++)
+		{
+			printf("%c", maze[i + j]);
+		}
+	}
+	*/
 		/*
 		char *from = strtok(buf, " \t\f\v\r\n");
 		char *to = strtok(NULL, " \t\f\v\r\n");
@@ -109,6 +147,6 @@ GraphSerializer_fromFile(FILE *fp)
 		*/
 	
 
-	return g;
+	return NULL;
 }
 

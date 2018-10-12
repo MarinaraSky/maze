@@ -32,7 +32,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+	/*
     char **route;
+
     ssize_t hops = Dijkstra_path(network, argv[2], argv[3], &route);
 
     printf("Path is %zd hops long\n", hops);
@@ -44,4 +46,7 @@ int main(int argc, char *argv[])
 
     free(route);
     Graph_disassemble(network);
+	*/
+	free(network);
+	return 0;
 }
