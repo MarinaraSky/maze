@@ -32,21 +32,21 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-	/*
     char **route;
+	char start[2] = ">";
+	char end[2] = "@";
 
-    ssize_t hops = Dijkstra_path(network, argv[2], argv[3], &route);
+    ssize_t hops = Dijkstra_path(network, start, end, &route);
 
     printf("Path is %zd hops long\n", hops);
     for (ssize_t n=0; n < hops; ++n)
     {
         printf(" %s → ", route[n]);
     }
-    puts("");
+     puts("");
 
     free(route);
     Graph_disassemble(network);
-	*/
-	free(network);
+	//free(network);
 	return 0;
 }
