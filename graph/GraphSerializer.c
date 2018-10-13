@@ -107,36 +107,116 @@ GraphSerializer_fromFile(FILE *fp)
 			printf("%c", maze[i][j]);
 		}
 	}
-	free(buf);
-	/*
+	char letters[82] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890-_=+!$%^&*(){}[]|`~";
 	for(size_t i = 0; i < lineCount; i++)
 	{
 		for(size_t j = 0; j < maxLength; j++)
 		{
-			printf("%c", maze[i + j]);
+			if(maze[i][j] != '#' && maze[i][j] != '\n')
+			{ 
+				char *curr = malloc(4);
+				if(maze[i][j] == '@' || maze[i][j] == '>')
+				{
+					curr[0] = maze[i][j];
+					curr[1] = '\0';
+				}
+				else
+				{
+					curr[0] = letters[maze[i][j] % sizeof(letters)];
+					curr[1] = letters[i % sizeof(letters)];
+					curr[2] = letters[j % sizeof(letters)];
+					curr[3] = '\0';
+				}
+				Graph_addNode(g, curr);
+				if(i < lineCount - 1 && maze[i + 1][j] != '#')
+				{
+					char *next = malloc(4);
+					if(maze[i + 1][j] == '@' || maze[i + 1][j] == '>')
+					{
+						next[0] = maze[i + 1][j];
+						next[1] = '\0';
+					}
+					else
+					{
+						next[0] = letters[maze[i + 1][j] % sizeof(letters)];
+						next[1] = letters[(i + 1) % sizeof(letters)];
+						next[2] = letters[j % sizeof(letters)];
+						next[3] = '\0';
+					}
+					Graph_addNode(g, next);
+					Graph_addEdge(g, curr, next, 1.0);
+					free(next);
+				}
+				if(i > 0 && maze[i - 1][j] != '#')
+				{
+					char *next = malloc(4);
+					if(maze[i - 1][j] == '@' || maze[i - 1][j] == '>')
+					{
+						next[0] = maze[i - 1][j];
+						next[1] = '\0';
+					}
+					else
+					{
+						next[0] = letters[maze[i - 1][j] % sizeof(letters)];
+						next[1] = letters[(i - 1) % sizeof(letters)];
+						next[2] = letters[j % sizeof(letters)];
+						next[3] = '\0';
+					}
+					Graph_addNode(g, next);
+					Graph_addEdge(g, curr, next, 1.0);
+					free(next);
+				}
+				if(j < maxLength  - 1 && maze[i][j + 1] != '#')
+				{ 
+					char *next = malloc(4);
+					if(maze[i][j + 1] == '@' || maze[i][j + 1] == '>')
+					{
+						next[0] = maze[i][j + 1];
+						next[1] = '\0';
+					}
+					else
+					{
+						next[0] = letters[maze[i][j + 1] % sizeof(letters)];
+						next[1] = letters[i % sizeof(letters)];
+						next[2] = letters[(j + 1) % sizeof(letters)];
+						next[3] = '\0';
+					}
+					Graph_addNode(g, next);
+					Graph_addEdge(g, curr, next, 1.0);
+					free(next);
+				}
+				if(j > 0 && maze[i][j - 1] != '#')
+				{
+					char *next = malloc(4);
+					if(maze[i][j - 1] == '@' || maze[i][j - 1] == '>')
+					{
+						next[0] = maze[i][j - 1];
+						next[1] = '\0';
+					}
+					else
+					{
+						next[0] = letters[maze[i][j - 1] % sizeof(letters)];
+						next[1] = letters[i % sizeof(letters)];
+						next[2] = letters[(j - 1) % sizeof(letters)];
+						next[3] = '\0';
+					}
+					Graph_addNode(g, next);
+					Graph_addEdge(g, curr, next, 1.0);
+					free(next);
+				}
+				free(curr);
+			}	
 		}
 	}
-	*/
-		/*
-		char *from = strtok(buf, " \t\f\v\r\n");
-		char *to = strtok(NULL, " \t\f\v\r\n");
-		char *sWeight = strtok(NULL, " \t\f\v\r\n");
-		if (!from || !to || !sWeight)
-		{
-			fprintf(stderr, "Line %zu invalid format, skipping\n", lineNumber);
-			++lineNumber;
-			continue;
-		}
 
-		char *err;
-		double weight = strtod(sWeight, &err);
-		if (*err)
-		{
-			fprintf(stderr, "Line %zu invalid weight, skipping\n", lineNumber);
-			++lineNumber;
-			continue;
-		}
+	free(buf);
+	for(size_t i = 0; i < lineCount; i++)
+	{
+		free(maze[i]);
+	}
+	free(maze);
 
+	/*(
 		// TODO This is inefficient, it may be better to do a single scan
 		// to a Map for nodes, then re-scan the file to add edges.
 		Graph_addNode(g, from);
@@ -147,6 +227,6 @@ GraphSerializer_fromFile(FILE *fp)
 		*/
 	
 
-	return NULL;
+	return g;
 }
 
