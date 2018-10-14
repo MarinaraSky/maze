@@ -40,7 +40,7 @@ GraphSerializer_toStdout(const Graph *g)
 }
 
 Graph *
-GraphSerializer_fromFile(FILE *fp)
+GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size_t *lineCount)
 {
 	Graph *g = Graph_create();
 	if (!g)
@@ -53,8 +53,8 @@ GraphSerializer_fromFile(FILE *fp)
 	size_t sizeOfBuf = 1;
 	size_t prevLineLength = 0;
 	size_t nextLineLength = 0;
-	size_t maxLength = 0;
-	size_t lineCount = 0;
+	//size_t maxLength = 0;
+	//size_t lineCount = 0;
 
 	getline(&buf, &sizeOfBuf, fp);
 	prevLineLength = sizeOfBuf;
@@ -75,22 +75,22 @@ GraphSerializer_fromFile(FILE *fp)
 			printf("invalid map\n");
 			return NULL;
 		}	
-		if(curLineSize > maxLength)
+		if(curLineSize > *maxLength)
 		{
-			maxLength = strlen(curLine);
+			*maxLength = strlen(curLine);
 		}
 
-		lineCount++;
+		*lineCount += 1;
 		prevLineLength = curLineSize;
 		sizeOfBuf = 1;
 		free(curLine);
 	}
 	rewind(fp);
 	
-	char **maze = malloc(lineCount * sizeof(char*));
-	for(size_t i = 0; i < lineCount; i++)
+	char **maze = malloc(*lineCount * sizeof(char*));
+	for(size_t i = 0; i < *lineCount; i++)
 	{
-		maze[i] = calloc(maxLength + 1, 1);
+		maze[i] = calloc(*maxLength + 1, 1);
 	}
 	size_t lineInMaze = -1;
 	sizeOfBuf = 1;
@@ -100,17 +100,10 @@ GraphSerializer_fromFile(FILE *fp)
 		sizeOfBuf = 1;
 	}
 
-	for(size_t i = 0; i < lineCount; i++)
-	{
-		for(size_t j = 0; j < maxLength; j++)
-		{
-			printf("%c", maze[i][j]);
-		}
-	}
 	char letters[82] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890-_=+!$%^&*(){}[]|`~";
-	for(size_t i = 0; i < lineCount; i++)
+	for(size_t i = 0; i < *lineCount; i++)
 	{
-		for(size_t j = 0; j < maxLength; j++)
+		for(size_t j = 0; j < *maxLength; j++)
 		{
 			if(maze[i][j] != '#' && maze[i][j] != '\n')
 			{ 
@@ -128,7 +121,7 @@ GraphSerializer_fromFile(FILE *fp)
 					curr[3] = '\0';
 				}
 				Graph_addNode(g, curr);
-				if(i < lineCount - 1 && maze[i + 1][j] != '#')
+				if(i < *lineCount - 1 && maze[i + 1][j] != '#')
 				{
 					char *next = malloc(4);
 					if(maze[i + 1][j] == '@' || maze[i + 1][j] == '>')
@@ -166,7 +159,7 @@ GraphSerializer_fromFile(FILE *fp)
 					Graph_addEdge(g, curr, next, 1.0);
 					free(next);
 				}
-				if(j < maxLength  - 1 && maze[i][j + 1] != '#')
+				if(j < *maxLength  - 1 && maze[i][j + 1] != '#')
 				{ 
 					char *next = malloc(4);
 					if(maze[i][j + 1] == '@' || maze[i][j + 1] == '>')
@@ -209,12 +202,8 @@ GraphSerializer_fromFile(FILE *fp)
 		}
 	}
 
+	*mazeFromFile = maze;
 	free(buf);
-	for(size_t i = 0; i < lineCount; i++)
-	{
-		free(maze[i]);
-	}
-	free(maze);
 
 	/*(
 		// TODO This is inefficient, it may be better to do a single scan
