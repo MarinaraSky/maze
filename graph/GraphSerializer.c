@@ -40,7 +40,7 @@ GraphSerializer_toStdout(const Graph *g)
 }
 
 Graph *
-GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size_t *lineCount)
+GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size_t *lineCount, char flags)
 {
 	Graph *g = Graph_create();
 	if (!g)
@@ -53,8 +53,6 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 	size_t sizeOfBuf = 1;
 	size_t prevLineLength = 0;
 	size_t nextLineLength = 0;
-	//size_t maxLength = 0;
-	//size_t lineCount = 0;
 
 	getline(&buf, &sizeOfBuf, fp);
 	prevLineLength = sizeOfBuf;
@@ -112,7 +110,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 					curr[0] = maze[i][j];
 					curr[1] = '\0';
 				}
-				else
+				else if(maze[i][j] == ' ' || (((flags & 1) == 1) && maze[i][j] == '+'))
 				{
 					sprintf(curr, "%zd,%zd", i, j);
 				}
@@ -125,7 +123,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 						next[0] = maze[i + 1][j];
 						next[1] = '\0';
 					}
-					else
+					else if(maze[i + 1][j] == ' ' || (((flags & 1) == 1) && maze[i + 1][j] == '+'))
 					{
 						sprintf(next, "%zd,%zd", i + 1, j);
 					}
@@ -141,7 +139,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 						next[0] = maze[i - 1][j];
 						next[1] = '\0';
 					}
-					else
+					else if(maze[i - 1][j] == ' ' || (((flags & 1) == 1) && maze[i - 1][j] == '+'))
 					{
 						sprintf(next, "%zd,%zd", i - 1, j);
 					}
@@ -157,7 +155,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 						next[0] = maze[i][j + 1];
 						next[1] = '\0';
 					}
-					else
+					else if(maze[i][j + 1] == ' ' || (((flags & 1) == 1) && maze[i][j + 1] == '+'))
 					{
 						sprintf(next, "%zd,%zd", i, j + 1);
 					}
@@ -173,7 +171,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 						next[0] = maze[i][j - 1];
 						next[1] = '\0';
 					}
-					else
+					else if(maze[i][j - 1] == ' ' || (((flags & 1) == 1) && maze[i][j - 1] == '+'))
 					{
 						sprintf(next, "%zd,%zd", i, j - 1);
 					}
