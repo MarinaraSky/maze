@@ -41,10 +41,27 @@ ssize_t Dijkstra_path(const Graph *g, const char *start, const char *end, char *
         return -1;
     }
 
-    // TODO ABC
-    map_insert(distance, start, 0);
-    pqueue_enqueue(next, (void *)start, 0);
-    vmap_insert(prev, start, NULL);
+    if(!map_insert(distance, start, 0))
+	{
+		fprintf(stderr, "Failed to insert into distance map.");
+        vmap_destroy(prev);
+        map_destroy(distance);
+		return -1;
+	}
+    if(!pqueue_enqueue(next, (void *)start, 0))
+	{
+		fprintf(stderr, "Failed to insert into priority queue.");
+        vmap_destroy(prev);
+        map_destroy(distance);
+		return -1;
+	}
+    if(!vmap_insert(prev, start, NULL))
+	{
+		fprintf(stderr, "Failed to insert into vmap.");
+        vmap_destroy(prev);
+        map_destroy(distance);
+		return -1;
+	}
 
     while (pqueue_size(next) > 0)
     {
@@ -65,16 +82,53 @@ ssize_t Dijkstra_path(const Graph *g, const char *start, const char *end, char *
 
             if (isnan(currBestDistanceToNeighbor))
             {
-                // TODO ABC
-                vmap_insert(prev, neighbors[n], curr);
-                map_insert(distance, neighbors[n], currDistance + weight);
-                pqueue_enqueue(next, neighbors[n], currDistance + weight);
+                if(!vmap_insert(prev, neighbors[n], curr))
+				{
+					fprintf(stderr, "Failed to insert into vmap.");
+        			vmap_destroy(prev);
+        			map_destroy(distance);
+					return -1;
+				}
+                if(!map_insert(distance, neighbors[n], currDistance + weight))
+				{
+					fprintf(stderr, "Failed to insert into distance map.");
+        			vmap_destroy(prev);
+        			map_destroy(distance);
+					return -1;
+
+				}
+                if(!pqueue_enqueue(next, neighbors[n], currDistance + weight))
+				{
+					fprintf(stderr, "Failed to insert into priority queue.");
+        			vmap_destroy(prev);
+        			map_destroy(distance);
+					return -1;
+
+				}
             }
             else if (currDistance + weight < currBestDistanceToNeighbor)
             {
-                vmap_insert(prev, neighbors[n], curr);
-                map_insert(distance, neighbors[n], currDistance + weight);
-                pqueue_reprioritize(next, neighbors[n], currDistance + weight);
+                if(!vmap_insert(prev, neighbors[n], curr))
+				{
+					fprintf(stderr, "Failed to insert into vmap.");
+        			vmap_destroy(prev);
+        			map_destroy(distance);
+					return -1;
+				}
+                if(!map_insert(distance, neighbors[n], currDistance + weight))
+				{
+					fprintf(stderr, "Failed to insert into distance map.");
+        			vmap_destroy(prev);
+        			map_destroy(distance);
+					return -1;
+				}
+                if(!pqueue_reprioritize(next, neighbors[n], currDistance + weight))
+				{
+					fprintf(stderr, "Failed to reprioritize priority queue.");
+        			vmap_destroy(prev);
+        			map_destroy(distance);
+					return -1;
+				}
             }
         }
 
@@ -115,6 +169,11 @@ cleanup:
 
 void Dijkstra_solveMaze(char **mazeFromFile, char **route, size_t hops)
 {
+	if(!mazeFromFile || !route)
+	{
+		fprintf(stderr, "Null Pointer passed to solveMaze.\n");
+		return;
+	}
 	ssize_t yCoord = 0;
 	ssize_t xCoord = 0;
 	for(size_t i = 0; i < hops; i++)
