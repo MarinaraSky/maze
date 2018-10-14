@@ -26,7 +26,11 @@ int main(int argc, char *argv[])
 	{
 		if(strcmp(argv[i], "-d") == 0)
 		{
-			flags = 1;
+			flags |= 1;
+		}
+		if(strcmp(argv[i], "-w") == 0)
+		{
+			flags |= 2;
 		}
 	}
 
