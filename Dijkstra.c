@@ -179,6 +179,13 @@ void Dijkstra_solveMaze(char **mazeFromFile, char **route, size_t hops)
 	for(size_t i = 0; i < hops; i++)
 	{
 		sscanf(route[i], "%zd,%zd", &yCoord, &xCoord);
-		mazeFromFile[yCoord][xCoord] = '.';
+		if(mazeFromFile[yCoord][xCoord] == ' ')
+		{
+			mazeFromFile[yCoord][xCoord] = '.';
+		}
+		else if(mazeFromFile[yCoord][xCoord] == '+')
+		{
+			mazeFromFile[yCoord][xCoord] = '/';
+		}
 	}
 }
