@@ -51,9 +51,6 @@ vmap *vmap_create(void)
 
 	m->size = 0;
 	m->capacity = 16;
-	// TODO: For linked-list resolution, this really
-	// should be reconsidered, and instead store
-	// an array of pointers to `struct entry`s instead
 	m->data = calloc(m->capacity, sizeof(*m->data));
 	if(!m->data) {
 		free(m);
