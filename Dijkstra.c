@@ -187,5 +187,9 @@ void Dijkstra_solveMaze(char **mazeFromFile, char **route, size_t hops)
 		{
 			mazeFromFile[yCoord][xCoord] = '/';
 		}
+		else if(mazeFromFile[yCoord][xCoord] == '~')
+		{
+			mazeFromFile[yCoord][xCoord] = '*';
+		}
 	}
 }
