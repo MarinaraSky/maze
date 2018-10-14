@@ -114,7 +114,12 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 				{
 					sprintf(curr, "%zd,%zd", i, j);
 				}
+				else if(maze[i][j] == ' ' || (((flags & 2) == 2) && maze[i][j] == '~'))
+				{
+					sprintf(curr, "%zd,%zd", i, j);
+				}
 				Graph_addNode(g, curr);
+				double weight = 1;
 				if(i < *lineCount - 1 && maze[i + 1][j] != '#')
 				{
 					char *next = malloc(sizeof(size_t) * 2 + 1);
@@ -127,8 +132,13 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 					{
 						sprintf(next, "%zd,%zd", i + 1, j);
 					}
+					else if(maze[i + 1][j] == ' ' || (((flags & 2) == 2) && maze[i + 1][j] == '~'))
+					{
+						sprintf(next, "%zd,%zd", i + 1, j);
+						weight += 1;
+					}
 					Graph_addNode(g, next);
-					Graph_addEdge(g, curr, next, 1.0);
+					Graph_addEdge(g, curr, next, weight);
 					free(next);
 				}
 				if(i > 0 && maze[i - 1][j] != '#')
@@ -143,8 +153,13 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 					{
 						sprintf(next, "%zd,%zd", i - 1, j);
 					}
+					else if(maze[i - 1][j] == ' ' || (((flags & 2) == 2) && maze[i - 1][j] == '~'))
+					{
+						sprintf(next, "%zd,%zd", i - 1, j);
+						weight += 1;
+					}
 					Graph_addNode(g, next);
-					Graph_addEdge(g, curr, next, 1.0);
+					Graph_addEdge(g, curr, next, weight);
 					free(next);
 				}
 				if(j < *maxLength  - 1 && maze[i][j + 1] != '#')
@@ -159,8 +174,13 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 					{
 						sprintf(next, "%zd,%zd", i, j + 1);
 					}
+					else if(maze[i][j + 1] == ' ' || (((flags & 2) == 2) && maze[i][j + 1] == '~'))
+					{
+						sprintf(next, "%zd,%zd", i, j + 1);
+						weight += 1;
+					}
 					Graph_addNode(g, next);
-					Graph_addEdge(g, curr, next, 1.0);
+					Graph_addEdge(g, curr, next, weight);
 					free(next);
 				}
 				if(j > 0 && maze[i][j - 1] != '#')
@@ -175,8 +195,13 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 					{
 						sprintf(next, "%zd,%zd", i, j - 1);
 					}
+					else if(maze[i][j - 1] == ' ' || (((flags & 2) == 2) && maze[i][j - 1] == '~'))
+					{
+						sprintf(next, "%zd,%zd", i, j - 1);
+						weight += 1;
+					}
 					Graph_addNode(g, next);
-					Graph_addEdge(g, curr, next, 1.0);
+					Graph_addEdge(g, curr, next, weight);
 					free(next);
 				}
 				free(curr);
