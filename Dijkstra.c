@@ -9,6 +9,7 @@
 #include "map/vmap.h"
 #include "dpqueue/pqueue.h"
 
+
 ssize_t Dijkstra_path(const Graph *g, const char *start, const char *end, char ***path)
 {
     if (!g || !start || !end || !path)
@@ -110,4 +111,30 @@ cleanup:
     vmap_destroy(prev);
 
     return hops;
+}
+
+void Dijkstra_solveMaze(char **mazeFromFile, char **route, size_t hops)
+{
+	char letters[82] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890-_=+!$%^&*(){}[]|`~";
+	size_t yCoord = 0;
+	size_t xCoord = 0;
+	for(size_t i = 0; i < hops; i++)
+	{
+		for(size_t j = 0; j < sizeof(letters); j++)
+		{
+			if(route[i][1] == letters[j])
+			{
+				yCoord = j;
+			}
+			if(route[i][2] == letters[j])
+			{
+				xCoord = j;
+			}
+			if(yCoord != 0 && xCoord != 0)
+			{
+				mazeFromFile[yCoord][xCoord] = '.';
+				continue;
+			}
+		}
+	}
 }

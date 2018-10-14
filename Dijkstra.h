@@ -15,5 +15,6 @@
  */
 ssize_t Dijkstra_path(const Graph *g, const char *start, const char *end, char ***path);
 
+void Dijkstra_solveMaze(char **mazeFromFile, char **route, size_t hops);
 
 #endif
