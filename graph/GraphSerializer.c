@@ -119,7 +119,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 				Graph_addNode(g, curr);
 				if(i < *lineCount - 1 && maze[i + 1][j] != '#')
 				{
-					char *next = malloc(4);
+					char *next = malloc(sizeof(size_t) * 2 + 1);
 					if(maze[i + 1][j] == '@' || maze[i + 1][j] == '>')
 					{
 						next[0] = maze[i + 1][j];
@@ -135,7 +135,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 				}
 				if(i > 0 && maze[i - 1][j] != '#')
 				{
-					char *next = malloc(4);
+					char *next = malloc(sizeof(size_t) * 2 + 1);
 					if(maze[i - 1][j] == '@' || maze[i - 1][j] == '>')
 					{
 						next[0] = maze[i - 1][j];
@@ -151,7 +151,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 				}
 				if(j < *maxLength  - 1 && maze[i][j + 1] != '#')
 				{ 
-					char *next = malloc(4);
+					char *next = malloc(sizeof(size_t) * 2 + 1);
 					if(maze[i][j + 1] == '@' || maze[i][j + 1] == '>')
 					{
 						next[0] = maze[i][j + 1];
@@ -167,7 +167,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 				}
 				if(j > 0 && maze[i][j - 1] != '#')
 				{
-					char *next = malloc(4);
+					char *next = malloc(sizeof(size_t) * 2 + 1);
 					if(maze[i][j - 1] == '@' || maze[i][j - 1] == '>')
 					{
 						next[0] = maze[i][j - 1];
