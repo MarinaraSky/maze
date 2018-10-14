@@ -46,15 +46,13 @@ int main(int argc, char *argv[])
 		for(size_t j = 0; j < maxLineLength; j++)
 		{
 			printf("%c", mazeFromFile[i][j]);
+			if(mazeFromFile[i][j] == '\n')
+			{
+				break;
+			}
 		}
 	}
 
-    printf("Path is %zd hops long\n", hops);
-    for (ssize_t n=0; n < hops; ++n)
-    {
-        printf(" %s → ", route[n]);
-    }
-     puts("");
 
     free(route);
     Graph_disassemble(network);
