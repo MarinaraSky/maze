@@ -21,7 +21,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    Graph *network = GraphSerializer_fromFile(fp);
+	char **mazeFromFile = NULL;
+	size_t maxLineLength = 0;
+	size_t lineCount = 0;
+    Graph *network = GraphSerializer_fromFile(fp, &mazeFromFile, &maxLineLength, &lineCount);
 
     fclose(fp);
 
@@ -37,6 +40,14 @@ int main(int argc, char *argv[])
 	char end[2] = "@";
 
     ssize_t hops = Dijkstra_path(network, start, end, &route);
+	Dijkstra_solveMaze(mazeFromFile, route, hops);
+	for(size_t i = 0; i < lineCount; i++)
+	{
+		for(size_t j = 0; j < maxLineLength; j++)
+		{
+			printf("%c", mazeFromFile[i][j]);
+		}
+	}
 
     printf("Path is %zd hops long\n", hops);
     for (ssize_t n=0; n < hops; ++n)
@@ -47,6 +58,5 @@ int main(int argc, char *argv[])
 
     free(route);
     Graph_disassemble(network);
-	//free(network);
 	return 0;
 }
