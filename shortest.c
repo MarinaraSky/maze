@@ -51,7 +51,9 @@ int main(int argc, char *argv[])
 				break;
 			}
 		}
+		free(mazeFromFile[i]);
 	}
+	free(mazeFromFile);
 
 
     free(route);
