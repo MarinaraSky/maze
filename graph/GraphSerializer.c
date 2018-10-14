@@ -100,14 +100,13 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 		sizeOfBuf = 1;
 	}
 
-	char letters[82] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890-_=+!$%^&*(){}[]|`~";
 	for(size_t i = 0; i < *lineCount; i++)
 	{
 		for(size_t j = 0; j < *maxLength; j++)
 		{
 			if(maze[i][j] != '#' && maze[i][j] != '\n')
 			{ 
-				char *curr = malloc(4);
+				char *curr = malloc(sizeof(size_t) * 2 + 1);
 				if(maze[i][j] == '@' || maze[i][j] == '>')
 				{
 					curr[0] = maze[i][j];
@@ -115,10 +114,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 				}
 				else
 				{
-					curr[0] = letters[maze[i][j] % sizeof(letters)];
-					curr[1] = letters[i % sizeof(letters)];
-					curr[2] = letters[j % sizeof(letters)];
-					curr[3] = '\0';
+					sprintf(curr, "%zd,%zd", i, j);
 				}
 				Graph_addNode(g, curr);
 				if(i < *lineCount - 1 && maze[i + 1][j] != '#')
@@ -131,10 +127,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 					}
 					else
 					{
-						next[0] = letters[maze[i + 1][j] % sizeof(letters)];
-						next[1] = letters[(i + 1) % sizeof(letters)];
-						next[2] = letters[j % sizeof(letters)];
-						next[3] = '\0';
+						sprintf(next, "%zd,%zd", i + 1, j);
 					}
 					Graph_addNode(g, next);
 					Graph_addEdge(g, curr, next, 1.0);
@@ -150,10 +143,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 					}
 					else
 					{
-						next[0] = letters[maze[i - 1][j] % sizeof(letters)];
-						next[1] = letters[(i - 1) % sizeof(letters)];
-						next[2] = letters[j % sizeof(letters)];
-						next[3] = '\0';
+						sprintf(next, "%zd,%zd", i - 1, j);
 					}
 					Graph_addNode(g, next);
 					Graph_addEdge(g, curr, next, 1.0);
@@ -169,10 +159,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 					}
 					else
 					{
-						next[0] = letters[maze[i][j + 1] % sizeof(letters)];
-						next[1] = letters[i % sizeof(letters)];
-						next[2] = letters[(j + 1) % sizeof(letters)];
-						next[3] = '\0';
+						sprintf(next, "%zd,%zd", i, j + 1);
 					}
 					Graph_addNode(g, next);
 					Graph_addEdge(g, curr, next, 1.0);
@@ -188,10 +175,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 					}
 					else
 					{
-						next[0] = letters[maze[i][j - 1] % sizeof(letters)];
-						next[1] = letters[i % sizeof(letters)];
-						next[2] = letters[(j - 1) % sizeof(letters)];
-						next[3] = '\0';
+						sprintf(next, "%zd,%zd", i, j - 1);
 					}
 					Graph_addNode(g, next);
 					Graph_addEdge(g, curr, next, 1.0);
