@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "Dijkstra.h"
 #include "graph/Graph.h"
@@ -8,7 +9,7 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
+    if (argc < 2)
     {
         fprintf(stderr, "Usage: %s <map>\n", argv[0]);
         return 1;
@@ -20,11 +21,19 @@ int main(int argc, char *argv[])
         perror("Unable to open file");
         return 1;
     }
+	char flags = 0;
+	for(int i = 0; i < argc; i++)
+	{
+		if(strcmp(argv[i], "-d") == 0)
+		{
+			flags = 1;
+		}
+	}
 
 	char **mazeFromFile = NULL;
 	size_t maxLineLength = 0;
 	size_t lineCount = 0;
-    Graph *network = GraphSerializer_fromFile(fp, &mazeFromFile, &maxLineLength, &lineCount);
+    Graph *network = GraphSerializer_fromFile(fp, &mazeFromFile, &maxLineLength, &lineCount, flags);
 
     fclose(fp);
 

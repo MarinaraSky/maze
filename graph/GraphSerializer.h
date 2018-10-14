@@ -18,6 +18,6 @@ GraphSerializer_toStdout(const Graph *g);
  * @return Graph object (NULL on error)
  */
 Graph *
-GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLineLength, size_t *lineCount);
+GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLineLength, size_t *lineCount, char flags);
 
 #endif
