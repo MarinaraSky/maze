@@ -21,12 +21,12 @@ int main(int argc, char *argv[])
 {
     if (argc < 2)
     {
-        fprintf(stderr, "Usage: %s <map>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <map> [-d] [-w] [-m size]\n", argv[0]);
         return 1;
     }
 
 	char flags = 0;
-	size_t size = 0;
+	ssize_t size = 0;
 	for(int i = 1; i < argc; i++)
 	{
 		if(strcmp(argv[i], "-d") == 0)
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 		else if((flags &= 4) == 4 && strcmp(argv[i - 1], "-m") == 0)
 		{
 			size = strtol(argv[i], NULL, 10);
-			if(!size)
+			if(size < 5)
 			{
 				flags ^= 4;	
 			}
@@ -55,18 +55,18 @@ int main(int argc, char *argv[])
 	size_t lineCount = 0;
 	Graph *network = NULL;
 	
-	if(((flags & 4) == 4) && size > 5)
+	if(((flags & 4) == 4))
 	{
 		maxLineLength = size;
 		lineCount = size;
 		Maze_generate(&mazeToSolve, maxLineLength, lineCount);
 		network = Graph_create();
-		GraphSerializer_fromMaze(&network, mazeToSolve, &maxLineLength, &lineCount, flags);
     	if (!network)
     	{
-        	fprintf(stderr, "Unable to load graph");
+        	fprintf(stderr, "Failed to create graph.");
         	return 1;
 		}
+		GraphSerializer_fromMaze(&network, mazeToSolve, &maxLineLength, &lineCount, flags);
 	}
 
 	else
