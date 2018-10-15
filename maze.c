@@ -1,3 +1,5 @@
+#include <ctype.h>
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -110,4 +112,81 @@ int main(int argc, char *argv[])
     free(route);
     Graph_disassemble(network);
 	return 0;
+}
+
+void
+Maze_generate(char ***customMaze, size_t maxLineLength, size_t lineCount)
+{
+	srand(time(0));
+	char **maze = malloc(sizeof(char *) * lineCount);
+	for(size_t i = 0; i < lineCount; i++)
+	{
+		maze[i] = malloc(sizeof(char) * maxLineLength + 1);
+	}
+	for(size_t i = 0; i < lineCount; i++)
+	{
+		for(size_t j = 0; j < maxLineLength + 1; j++)
+		{
+			if(j == maxLineLength)
+			{
+				maze[i][j] = '\n';
+			}
+			else if(i == 0 || i == lineCount - 1 || j == 0 || j == maxLineLength - 1)
+			{
+				maze[i][j] = '#';
+			}
+			else
+			{
+				maze[i][j] = ' ';
+			}
+		}
+	}
+	/* Placeing start location */
+	size_t x = 0;
+	while(x == 0 || x >= maxLineLength - 1 || x >= lineCount - 1)
+	{
+		x = rand() % (lineCount * maxLineLength);	
+	}
+	size_t y = 0;
+	while(y == 0 || y >= maxLineLength - 1 || y >= lineCount - 1 || y == x)
+	{
+		y = rand() % (lineCount * maxLineLength);	
+	}
+	maze[x % lineCount][y % maxLineLength] = '>';
+	/* Placing ending location */
+	x = 0;
+	while(x == 0 || x >= maxLineLength - 1 || x >= lineCount - 1)
+	{
+		x = rand() % (lineCount * maxLineLength);	
+	}
+	y = 0;
+	while(y == 0 || y >= maxLineLength - 1 || y >= lineCount - 1 || y == x)
+	{
+		y = rand() % (lineCount * maxLineLength);	
+	}
+	maze[x % lineCount][y % maxLineLength] = '@';
+
+	/* Making 30% of the tiles in the map walls */
+	size_t tilesRemaining = ((maxLineLength - 1) * (lineCount - 1)) / 3;
+
+	for(size_t i = tilesRemaining; i > 0; i--)
+	{
+		size_t xCoord = 0;
+		while(xCoord == 0 || xCoord >= maxLineLength - 1 || xCoord >= lineCount - 1)
+		{
+			xCoord = rand() % (lineCount * maxLineLength);	
+		}
+		size_t yCoord = 0;
+		while(yCoord == 0 || yCoord >= maxLineLength - 1 || yCoord >= lineCount - 1 || yCoord == xCoord)
+		{
+			yCoord = rand() % (lineCount * maxLineLength);	
+		}
+		if(maze[xCoord][yCoord] == '@' || maze[xCoord][yCoord] == '>')
+		{
+			i ++;
+			continue;
+		}
+		maze[xCoord][yCoord] = '#';
+	}
+	*customMaze = maze;
 }
