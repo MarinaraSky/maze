@@ -9,161 +9,205 @@
 
 #include <openssl/md5.h>
 
-struct entry {
-	char *key;
-	void *value;
-	struct entry *next;
+struct entry
+{
+    char           *key;
+    void           *value;
+    struct entry   *next;
 };
 
-struct _vmap {
-	struct entry *data;
-	size_t size;
-	size_t capacity;
+struct _vmap
+{
+    struct entry   *data;
+    size_t          size;
+    size_t          capacity;
 };
 
-static uint64_t hash(const unsigned char *str)
+static uint64_t
+hash(
+    const unsigned char *str)
 {
-	// This would normally be MD5_DIGEST_LENGTH in uint8_t's, so it translates
-	// to 2 uint64_t's.
-	uint64_t buf[2];
-	MD5(str, strlen((const char *)str), (unsigned char *)buf);
+    // This would normally be MD5_DIGEST_LENGTH in uint8_t's, so it translates
+    // to 2 uint64_t's.
+    uint64_t        buf[2];
 
-	// Either half is acceptable
-	return buf[1];
+    MD5(str, strlen((const char *) str), (unsigned char *) buf);
+
+    // Either half is acceptable
+    return buf[1];
 }
 
-static void ll_destroy(struct entry *e)
+static void
+ll_destroy(
+    struct entry *e)
 {
-	while(e) {
-		struct entry *next = e->next;
-		free(e->key);
-		free(e);
-		e = next;
-	}
+    while (e)
+    {
+        struct entry   *next = e->next;
+
+        free(e->key);
+        free(e);
+        e = next;
+    }
 }
 
-vmap *vmap_create(void)
+vmap           *
+vmap_create(
+    void)
 {
-	vmap *m = malloc(sizeof(*m));
-	if(!m) {
-		return NULL;
-	}
+    vmap           *m = malloc(sizeof(*m));
 
-	m->size = 0;
-	m->capacity = 16;
-	m->data = calloc(m->capacity, sizeof(*m->data));
-	if(!m->data) {
-		free(m);
-		return NULL;
-	}
+    if (!m)
+    {
+        return NULL;
+    }
 
-	return m;
+    m->size = 0;
+    m->capacity = 16;
+    m->data = calloc(m->capacity, sizeof(*m->data));
+    if (!m->data)
+    {
+        free(m);
+        return NULL;
+    }
+
+    return m;
 }
 
-bool vmap_insert(vmap *m, const char *key, void *value)
+bool
+vmap_insert(
+    vmap * m,
+    const char *key,
+    void *value)
 {
-	if(!m || !key) {
-		return false;
-	}
+    if (!m || !key)
+    {
+        return false;
+    }
 
-	if(m->size >= m->capacity / 3) {
-		struct entry *tmp = calloc(2*m->capacity, sizeof(*tmp));
-		if(!tmp) {
-			return false;
-		}
-		struct entry *old = m->data;
-		m->capacity *= 2;
-		m->size = 0;
-		m->data = tmp;
+    if (m->size >= m->capacity / 3)
+    {
+        struct entry   *tmp = calloc(2 * m->capacity, sizeof(*tmp));
 
-		for(size_t n=0; n < m->capacity / 2; ++n) {
-			struct entry *target = &old[n];
+        if (!tmp)
+        {
+            return false;
+        }
+        struct entry   *old = m->data;
 
-			while(target->key) {
-				vmap_insert(m, target->key, target->value);
-				target = target->next;
-			}
-			free(old[n].key);
-			ll_destroy(old[n].next);
-		}
-		free(old);
-	}
+        m->capacity *= 2;
+        m->size = 0;
+        m->data = tmp;
 
-	uint64_t idx = hash((unsigned char *)key) % m->capacity;
+        for (size_t n = 0; n < m->capacity / 2; ++n)
+        {
+            struct entry   *target = &old[n];
 
-	struct entry *target = &m->data[idx];
+            while (target->key)
+            {
+                vmap_insert(m, target->key, target->value);
+                target = target->next;
+            }
+            free(old[n].key);
+            ll_destroy(old[n].next);
+        }
+        free(old);
+    }
 
-	while(target->next) {
-		if(strcmp(target->key, key) == 0) {
-			target->value = value;
-			return true;
-		}
+    uint64_t        idx = hash((unsigned char *) key) % m->capacity;
 
-		target = target->next;
-	}
+    struct entry   *target = &m->data[idx];
 
-	target->key = strdup(key);
-	target->value = value;
-	target->next = calloc(1, sizeof(*target->next));
+    while (target->next)
+    {
+        if (strcmp(target->key, key) == 0)
+        {
+            target->value = value;
+            return true;
+        }
 
-	m->size++;
+        target = target->next;
+    }
 
-	return true;
+    target->key = strdup(key);
+    target->value = value;
+    target->next = calloc(1, sizeof(*target->next));
+
+    m->size++;
+
+    return true;
 }
 
-bool vmap_exists(vmap *m, const char *key)
+bool
+vmap_exists(
+    vmap * m,
+    const char *key)
 {
-	if(!m || !key) {
-		return false;
-	}
+    if (!m || !key)
+    {
+        return false;
+    }
 
-	uint64_t idx = hash((unsigned char *)key) % m->capacity;
+    uint64_t        idx = hash((unsigned char *) key) % m->capacity;
 
-	struct entry *target = &m->data[idx];
+    struct entry   *target = &m->data[idx];
 
-	while(target && target->key) {
-		if(strcmp(target->key, key) == 0) {
-			return true;
-		}
+    while (target && target->key)
+    {
+        if (strcmp(target->key, key) == 0)
+        {
+            return true;
+        }
 
-		target = target->next;
-	}
+        target = target->next;
+    }
 
-	return false;
+    return false;
 }
 
-void *vmap_lookup(vmap *m, const char *key)
+void           *
+vmap_lookup(
+    vmap * m,
+    const char *key)
 {
-	if(!m || !key) {
-		return false;
-	}
+    if (!m || !key)
+    {
+        return false;
+    }
 
-	uint64_t idx = hash((unsigned char *)key) % m->capacity;
-	struct entry *target = &m->data[idx];
+    uint64_t        idx = hash((unsigned char *) key) % m->capacity;
+    struct entry   *target = &m->data[idx];
 
-	while(target && target->key) {
-		if(strcmp(target->key, key) == 0) {
-			return target->value;
-		}
+    while (target && target->key)
+    {
+        if (strcmp(target->key, key) == 0)
+        {
+            return target->value;
+        }
 
-		target = target->next;
-	}
+        target = target->next;
+    }
 
-	return NULL;
+    return NULL;
 }
 
-void vmap_destroy(vmap *m)
+void
+vmap_destroy(
+    vmap * m)
 {
-	if(!m) {
-		return;
-	}
+    if (!m)
+    {
+        return;
+    }
 
-	for(size_t n=0; n < m->capacity; ++n) {
-		if(m->data[n].key) {
-			free(m->data[n].key);
-			ll_destroy(m->data[n].next);
-		}
-	}
-	free(m->data);
-	free(m);
+    for (size_t n = 0; n < m->capacity; ++n)
+    {
+        if (m->data[n].key)
+        {
+            free(m->data[n].key);
+            ll_destroy(m->data[n].next);
+        }
+    }
+    free(m->data);
+    free(m);
 }

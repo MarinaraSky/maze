@@ -1,5 +1,5 @@
 #ifndef GRAPH_H
- #define GRAPH_H
+#define GRAPH_H
 
 #include <stdbool.h>
 #include <unistd.h>
@@ -10,8 +10,8 @@ typedef struct graph Graph;
  * @brief Create an empty graph structure
  * @return the graph structure, or NULL on error
  */
-Graph *
-Graph_create(void);
+Graph          *Graph_create(
+    void);
 
 
 /**
@@ -21,8 +21,9 @@ Graph_create(void);
  * @param name Name of new node
  * @return true for successful add
  */
-bool
-Graph_addNode(Graph *g, const char *name);
+bool            Graph_addNode(
+    Graph * g,
+    const char *name);
 
 /**
  * @brief Adds an edge to the graph (does not add
@@ -33,8 +34,11 @@ Graph_addNode(Graph *g, const char *name);
  * @param weight Cost of the edge
  * @return true for successful add
  */
-bool
-Graph_addEdge(Graph *g, const char *from, const char *to, double weight);
+bool            Graph_addEdge(
+    Graph * g,
+    const char *from,
+    const char *to,
+    double weight);
 
 /**
  * @brief Checks if two nodes are adjacent
@@ -43,8 +47,10 @@ Graph_addEdge(Graph *g, const char *from, const char *to, double weight);
  * @param to Name of destination node
  * @return True if nodes are adjacent, false otherwise
  */
-bool
-Graph_isAdjacent(const Graph *g, const char *from, const char *to);
+bool            Graph_isAdjacent(
+    const Graph * g,
+    const char *from,
+    const char *to);
 
 /**
  * @brief provide list of nodes of a graph
@@ -52,8 +58,9 @@ Graph_isAdjacent(const Graph *g, const char *from, const char *to);
  * @param nodes input parameter to store array of nodes' names
  * @return number of nodes found (-1 for error)
  */
-ssize_t
-Graph_getNodes(const Graph *g, char ***nodes);
+ssize_t         Graph_getNodes(
+    const Graph * g,
+    char ***nodes);
 
 /**
  * @brief provide list of neighbor's names for a given node
@@ -62,8 +69,10 @@ Graph_getNodes(const Graph *g, char ***nodes);
  * @param neighbors input parameter to store array of neighbors' names
  * @return number of neighbors found (-1 for error)
  */
-ssize_t
-Graph_getNeighbors(const Graph *g, const char *name, char ***neighbors);
+ssize_t         Graph_getNeighbors(
+    const Graph * g,
+    const char *name,
+    char ***neighbors);
 
 /**
  * @brief Provide edge weight between two nodes
@@ -72,16 +81,19 @@ Graph_getNeighbors(const Graph *g, const char *name, char ***neighbors);
  * @param to neighbor node
  * @return weight of edge (NAN if edge does not exist)
  */
-double
-Graph_getEdgeWeight(const Graph *g, const char *from, const char *to);
+double          Graph_getEdgeWeight(
+    const Graph * g,
+    const char *from,
+    const char *to);
 
 /**
  * @brief Remove a node from the graph
  * @param g Graph to alter
  * @param name Name of node to remove
  */
-void
-Graph_deleteNode(Graph *g, const char *name);
+void            Graph_deleteNode(
+    Graph * g,
+    const char *name);
 
 /**
  * @brief Remove an edge from the graph
@@ -89,15 +101,17 @@ Graph_deleteNode(Graph *g, const char *name);
  * @param from Starting node of edge
  * @param to Ending node of edge
  */
-void
-Graph_deleteEdge(Graph *g, const char *from, const char *to);
+void            Graph_deleteEdge(
+    Graph * g,
+    const char *from,
+    const char *to);
 
 /**
  * @brief Prints graph to stdout
  * @param g Graph to print
  */
-void
-Graph_print(const Graph *g);
+void            Graph_print(
+    const Graph * g);
 
 /**
  * @brief Destroy the graph scaffolding without affecting the
@@ -105,8 +119,8 @@ Graph_print(const Graph *g);
  *
  * @param g Graph to disassemble
  */
-void
-Graph_disassemble(Graph *g);
+void            Graph_disassemble(
+    Graph * g);
 
 
 #endif

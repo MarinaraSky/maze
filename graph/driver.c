@@ -4,16 +4,20 @@
 #include "Graph.h"
 #include "GraphSerializer.h"
 
-int main(void)
+int
+main(
+    void)
 {
-    FILE *fp = fopen("sample/alfa", "r");
+    FILE           *fp = fopen("sample/alfa", "r");
+
     if (!fp)
     {
         perror("Unable to open sample/alfa");
         return 1;
     }
 
-    Graph *network = GraphSerializer_fromFile(fp);
+    Graph          *network = GraphSerializer_fromFile(fp);
+
     fclose(fp);
 
     if (!network)

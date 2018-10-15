@@ -1,5 +1,5 @@
 #ifndef MAP_H
- #define MAP_H
+#define MAP_H
 
 #include <stdbool.h>
 
@@ -13,7 +13,8 @@ typedef struct _map map;
  * @brief Creates an empty map structure
  * @return Pointer to new map in memory
  */
-map *map_create(void);
+map            *map_create(
+    void);
 
 /**
  * @brief Inserts new key and value into map
@@ -22,7 +23,10 @@ map *map_create(void);
  * @param value Value for specified key
  * @return True if added successfully, False if failed
  */
-bool map_insert(map *m, const char *key, double value);
+bool            map_insert(
+    map * m,
+    const char *key,
+    double value);
 
 /**
  * @brief Checks if key exists in map
@@ -30,7 +34,9 @@ bool map_insert(map *m, const char *key, double value);
  * @param key Key value to look for in map
  * @return True if found successfully, False if not found
  */
-bool map_exists(map *m, const char *key);
+bool            map_exists(
+    map * m,
+    const char *key);
 
 /**
  * @brief Returns Value of specified key
@@ -38,12 +44,15 @@ bool map_exists(map *m, const char *key);
  * @param key Key value to look for in map
  * @return Value at key specified
  */
-double map_lookup(map *m, const char *key);
+double          map_lookup(
+    map * m,
+    const char *key);
 
 /**
  * @brief Breaks down map and frees memory
  * @param m Map to destroy
  */
-void map_destroy(map *m);
+void            map_destroy(
+    map * m);
 
 #endif
