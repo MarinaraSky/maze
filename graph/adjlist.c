@@ -9,27 +9,30 @@
 
 typedef struct edge_
 {
-    double weight;
-    struct node_ *to;
-    struct edge_ *next;
+    double          weight;
+    struct node_   *to;
+    struct edge_   *next;
 } edge_;
 
 typedef struct node_
 {
-    char *name;
-    struct node_ *next;
-    struct edge_ *edges;
+    char           *name;
+    struct node_   *next;
+    struct edge_   *edges;
 } node_;
 
 struct graph
 {
-    struct node_ *root;
+    struct node_   *root;
 };
 
 static struct node_ *
-getNode(const Graph *g, const char *name)
+getNode(
+    const Graph * g,
+    const char *name)
 {
-    struct node_ *curr = g->root;
+    struct node_   *curr = g->root;
+
     while (curr)
     {
         if (strcmp(name, curr->name) == 0)
@@ -43,13 +46,15 @@ getNode(const Graph *g, const char *name)
 }
 
 static void
-removeNode(struct node_ *curr)
+removeNode(
+    struct node_ *curr)
 {
-    struct edge_ *e = curr->edges;
+    struct edge_   *e = curr->edges;
 
     while (e)
     {
-        struct edge_ *tmp = e->next;
+        struct edge_   *tmp = e->next;
+
         free(e);
         e = tmp;
     }
@@ -58,10 +63,12 @@ removeNode(struct node_ *curr)
     free(curr);
 }
 
-Graph *
-Graph_create(void)
+Graph          *
+Graph_create(
+    void)
 {
-    Graph *g = malloc(sizeof(*g));
+    Graph          *g = malloc(sizeof(*g));
+
     if (!g)
     {
         return NULL;
@@ -73,7 +80,9 @@ Graph_create(void)
 }
 
 bool
-Graph_addNode(Graph *g, const char *name)
+Graph_addNode(
+    Graph * g,
+    const char *name)
 {
     if (!g || !name)
     {
@@ -86,7 +95,8 @@ Graph_addNode(Graph *g, const char *name)
         return false;
     }
 
-    struct node_ *created = malloc(sizeof(*created));
+    struct node_   *created = malloc(sizeof(*created));
+
     if (!created)
     {
         return false;
@@ -107,20 +117,26 @@ Graph_addNode(Graph *g, const char *name)
 }
 
 bool
-Graph_addEdge(Graph *g, const char *from, const char *to, double weight)
+Graph_addEdge(
+    Graph * g,
+    const char *from,
+    const char *to,
+    double weight)
 {
-    if(!g || !from || !to || isnan(weight))
+    if (!g || !from || !to || isnan(weight))
     {
         return false;
     }
 
-    struct node_ *curr = getNode(g, from);
+    struct node_   *curr = getNode(g, from);
+
     if (!curr)
     {
         return false;
     }
 
-    struct edge_ *e = curr->edges;
+    struct edge_   *e = curr->edges;
+
     while (e)
     {
         // If edge already exists, skip it
@@ -132,7 +148,8 @@ Graph_addEdge(Graph *g, const char *from, const char *to, double weight)
     }
 
     // Ready to add new edge
-    struct edge_ *created = malloc(sizeof(*created));
+    struct edge_   *created = malloc(sizeof(*created));
+
     if (!created)
     {
         return false;
@@ -151,49 +168,59 @@ Graph_addEdge(Graph *g, const char *from, const char *to, double weight)
 }
 
 bool
-Graph_isAdjacent(const Graph *g, const char *from, const char *to)
+Graph_isAdjacent(
+    const Graph * g,
+    const char *from,
+    const char *to)
 {
     return !isnan(Graph_getEdgeWeight(g, from, to));
 }
 
 ssize_t
-Graph_getNodes(const Graph *g, char ***nodes)
+Graph_getNodes(
+    const Graph * g,
+    char ***nodes)
 {
-	if (!g || !nodes)
-	{
-		errno = EINVAL;
-		return -1;
-	}
+    if (!g || !nodes)
+    {
+        errno = EINVAL;
+        return -1;
+    }
 
-	ssize_t nodeCount = 0;
-	struct node_ *curr = g->root;
-	while (curr)
-	{
-		++nodeCount;
-		curr = curr->next;
-	}
+    ssize_t         nodeCount = 0;
+    struct node_   *curr = g->root;
 
-	char **results = malloc(nodeCount * sizeof(*results));
-	if (!results)
-	{
-		errno = ENOMEM;
-		return -1;
-	}
+    while (curr)
+    {
+        ++nodeCount;
+        curr = curr->next;
+    }
 
-	nodeCount = 0;
-	curr = g->root;
-	while (curr)
-	{
-		results[nodeCount++] = curr->name;
-		curr = curr->next;
-	}
+    char          **results = malloc(nodeCount * sizeof(*results));
 
-	*nodes = results;
-	return nodeCount;
+    if (!results)
+    {
+        errno = ENOMEM;
+        return -1;
+    }
+
+    nodeCount = 0;
+    curr = g->root;
+    while (curr)
+    {
+        results[nodeCount++] = curr->name;
+        curr = curr->next;
+    }
+
+    *nodes = results;
+    return nodeCount;
 }
 
 ssize_t
-Graph_getNeighbors(const Graph *g, const char *name, char ***neighbors)
+Graph_getNeighbors(
+    const Graph * g,
+    const char *name,
+    char ***neighbors)
 {
     if (!g || !name || !neighbors)
     {
@@ -201,7 +228,8 @@ Graph_getNeighbors(const Graph *g, const char *name, char ***neighbors)
         return -1;
     }
 
-    struct node_ *curr = getNode(g, name);
+    struct node_   *curr = getNode(g, name);
+
     if (!curr)
     {
         errno = ENOENT;
@@ -214,15 +242,17 @@ Graph_getNeighbors(const Graph *g, const char *name, char ***neighbors)
         return 0;
     }
 
-    ssize_t edgeCount = 0;
-    struct edge_ *e = curr->edges;
+    ssize_t         edgeCount = 0;
+    struct edge_   *e = curr->edges;
+
     while (e)
     {
         ++edgeCount;
         e = e->next;
     }
 
-    char **results = malloc(edgeCount * sizeof(*results));
+    char          **results = malloc(edgeCount * sizeof(*results));
+
     if (!results)
     {
         errno = ENOMEM;
@@ -243,7 +273,10 @@ Graph_getNeighbors(const Graph *g, const char *name, char ***neighbors)
 }
 
 double
-Graph_getEdgeWeight(const Graph *g, const char *from, const char *to)
+Graph_getEdgeWeight(
+    const Graph * g,
+    const char *from,
+    const char *to)
 {
     if (!g || !from || !to)
     {
@@ -251,14 +284,16 @@ Graph_getEdgeWeight(const Graph *g, const char *from, const char *to)
         return NAN;
     }
 
-    struct node_ *curr = getNode(g, from);
+    struct node_   *curr = getNode(g, from);
+
     if (!curr)
     {
         errno = EINVAL;
         return NAN;
     }
 
-    struct edge_ *e = curr->edges;
+    struct edge_   *e = curr->edges;
+
     while (e)
     {
         if (strcmp(e->to->name, to) == 0)
@@ -273,14 +308,17 @@ Graph_getEdgeWeight(const Graph *g, const char *from, const char *to)
 }
 
 void
-Graph_deleteNode(Graph *g, const char *name)
+Graph_deleteNode(
+    Graph * g,
+    const char *name)
 {
     if (!g || !name)
     {
         return;
     }
 
-    struct node_ *curr = g->root;
+    struct node_   *curr = g->root;
+
     if (!curr)
     {
         return;
@@ -306,7 +344,8 @@ Graph_deleteNode(Graph *g, const char *name)
         return;
     }
 
-    struct node_ *nextNode = curr->next;
+    struct node_   *nextNode = curr->next;
+
     while (nextNode)
     {
         if (strcmp(nextNode->name, name) == 0)
@@ -322,26 +361,32 @@ Graph_deleteNode(Graph *g, const char *name)
 }
 
 void
-Graph_deleteEdge(Graph *g, const char *from, const char *to)
+Graph_deleteEdge(
+    Graph * g,
+    const char *from,
+    const char *to)
 {
     if (!g || !from || !to)
     {
         return;
     }
 
-    struct node_ *curr = getNode(g, from);
+    struct node_   *curr = getNode(g, from);
+
     if (!curr)
     {
         return;
     }
 
-    struct edge_ *e = curr->edges;
+    struct edge_   *e = curr->edges;
+
     if (!e)
     {
         return;
     }
 
-    struct edge_ *nextEdge = e->next;
+    struct edge_   *nextEdge = e->next;
+
     if (strcmp(e->to->name, to) == 0)
     {
         curr->edges = nextEdge;
@@ -364,19 +409,22 @@ Graph_deleteEdge(Graph *g, const char *from, const char *to)
 }
 
 void
-Graph_print(const Graph *g)
+Graph_print(
+    const Graph * g)
 {
     if (!g)
     {
         return;
     }
 
-    struct node_ *curr = g->root;
+    struct node_   *curr = g->root;
+
     while (curr)
     {
         printf("%s: ", curr->name);
 
-        struct edge_ *e = curr->edges;
+        struct edge_   *e = curr->edges;
+
         while (e)
         {
             printf("→ %s ", e->to->name);
@@ -389,25 +437,29 @@ Graph_print(const Graph *g)
 }
 
 void
-Graph_disassemble(Graph *g)
+Graph_disassemble(
+    Graph * g)
 {
     if (!g)
     {
         return;
     }
 
-    struct node_ *curr = g->root;
+    struct node_   *curr = g->root;
+
     while (curr)
     {
-        struct edge_ *e = curr->edges;
+        struct edge_   *e = curr->edges;
+
         while (e)
         {
-            struct edge_ *tmp = e->next;
+            struct edge_   *tmp = e->next;
+
             free(e);
             e = tmp;
         }
 
-        struct node_ *tmpNode = curr->next;
+        struct node_   *tmpNode = curr->next;
 
         free(curr->name);
         free(curr);
