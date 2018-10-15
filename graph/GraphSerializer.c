@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "Graph.h"
+#include "GraphSerializer.h"
 
 void
 GraphSerializer_toStdout(const Graph *g)
@@ -98,6 +99,16 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 		sizeOfBuf = 1;
 	}
 
+	GraphSerializer_fromMaze(&g, maze, maxLength, lineCount, flags);
+	*mazeFromFile = maze;
+	free(buf);
+
+	return g;
+}
+
+void 
+GraphSerializer_fromMaze(Graph **g, char **maze, size_t *maxLength, size_t *lineCount, char flags)
+{
 	for(size_t i = 0; i < *lineCount; i++)
 	{
 		for(size_t j = 0; j < *maxLength; j++)
@@ -118,7 +129,7 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 				{
 					sprintf(curr, "%zd,%zd", i, j);
 				}
-				Graph_addNode(g, curr);
+				Graph_addNode(*g, curr);
 				double weight = 1;
 				if(i < *lineCount - 1 && maze[i + 1][j] != '#')
 				{
@@ -137,8 +148,8 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 						sprintf(next, "%zd,%zd", i + 1, j);
 						weight += 1;
 					}
-					Graph_addNode(g, next);
-					Graph_addEdge(g, curr, next, weight);
+					Graph_addNode(*g, next);
+					Graph_addEdge(*g, curr, next, weight);
 					free(next);
 				}
 				if(i > 0 && maze[i - 1][j] != '#')
@@ -158,8 +169,8 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 						sprintf(next, "%zd,%zd", i - 1, j);
 						weight += 1;
 					}
-					Graph_addNode(g, next);
-					Graph_addEdge(g, curr, next, weight);
+					Graph_addNode(*g, next);
+					Graph_addEdge(*g, curr, next, weight);
 					free(next);
 				}
 				if(j < *maxLength  - 1 && maze[i][j + 1] != '#')
@@ -179,8 +190,8 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 						sprintf(next, "%zd,%zd", i, j + 1);
 						weight += 1;
 					}
-					Graph_addNode(g, next);
-					Graph_addEdge(g, curr, next, weight);
+					Graph_addNode(*g, next);
+					Graph_addEdge(*g, curr, next, weight);
 					free(next);
 				}
 				if(j > 0 && maze[i][j - 1] != '#')
@@ -200,29 +211,12 @@ GraphSerializer_fromFile(FILE *fp, char ***mazeFromFile, size_t *maxLength, size
 						sprintf(next, "%zd,%zd", i, j - 1);
 						weight += 1;
 					}
-					Graph_addNode(g, next);
-					Graph_addEdge(g, curr, next, weight);
+					Graph_addNode(*g, next);
+					Graph_addEdge(*g, curr, next, weight);
 					free(next);
 				}
 				free(curr);
 			}	
 		}
 	}
-
-	*mazeFromFile = maze;
-	free(buf);
-
-	/*(
-		// TODO This is inefficient, it may be better to do a single scan
-		// to a Map for nodes, then re-scan the file to add edges.
-		Graph_addNode(g, from);
-		Graph_addNode(g, to);
-		Graph_addEdge(g, from, to, weight);
-
-		++lineNumber;
-		*/
-	
-
-	return g;
 }
-
